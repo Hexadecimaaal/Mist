@@ -19,7 +19,7 @@ data class Bind(val name : AST, val type : AST) : AST()
 class Parser {
     private var pos : Int = 0
     private var input : String = ""
-    public fun parse(input : String) : AST {
+    fun parse(input : String) : AST {
         this.input = input + '\uFFFF'
 //        val list = ArrayList<AST>()
 //        while (peekToken() != End) {
@@ -46,7 +46,7 @@ class Parser {
     private fun parseSExp() : SExp {
         val head = parseAST()
         var x = peekToken()
-        val l = ArrayList<AST>()
+        val l = arrayListOf<AST>()
         while (x != RParen) {
             l.add(parseAST())
             x = peekToken()
@@ -110,7 +110,7 @@ class Parser {
 
     private fun peekToken() : Token {
         val oldPos = pos
-        val tok = (getToken())
+        val tok = getToken()
         pos = oldPos
         return tok
     }
@@ -135,7 +135,7 @@ class Parser {
 
     companion object {
         const val AZaz = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
-        const val AZaz09 = AZaz + "1234567890-"
+        const val AZaz09 = "$AZaz-1234567890"
         const val Space = " \n\t\r"
         const val Symbols = "!#$%&@`;+*:,<.>/?_=^~\\¥|-"
     }

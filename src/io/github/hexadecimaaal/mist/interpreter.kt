@@ -1,13 +1,10 @@
 package io.github.hexadecimaaal.mist
 
-import java.util.*
-
 class Interpreter {
     private val myCuteRBQParser = Parser()
-    private var symbolList = HashMap<String, MistObject>()
+    private var symbolList = hashMapOf<String, MistObject>()
     fun transform(s : String) : MistObject? {
-        val ast = myCuteRBQParser.parse(s)
-        return transform(ast)
+        return transform(myCuteRBQParser.parse(s))
     }
     fun transform(ast : AST) : MistObject? {
        return when (ast) {
