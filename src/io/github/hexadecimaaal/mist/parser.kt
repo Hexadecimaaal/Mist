@@ -19,26 +19,27 @@ data class Bind(val name : AST, val type : AST) : AST()
 class Parser {
     private var pos : Int = 0
     private var input : String = ""
-    fun parse(input : String) : List<AST> {
-        this.input = input
-        val list = ArrayList<AST>()
-        while (peekToken() !is End) {
-            list.add(parseAST())
-        }
-        return list
+    public fun parse(input : String) : AST {
+        this.input = input + '\uFFFF'
+//        val list = ArrayList<AST>()
+//        while (peekToken() != End) {
+//            list.add(parseAST())
+//        }
+//        return list
+        return parseAST()
     }
 
     private fun parseAST() : AST {
         val x = getToken()
         return when (x) {
-            is LParen -> parseSExp()
+            LParen -> parseSExp()
             is TIdentifier -> Identifier(x.name)
-            is RParen -> TODO()
-            is End -> TODO()
-            is As -> TODO()
+            RParen -> TODO()
+            End -> TODO()
+            As -> TODO()
             is TOperator -> Identifier(x.name)
-            is LBracket -> parseVect()
-            is RBracket -> TODO()
+            LBracket -> parseVect()
+            RBracket -> TODO()
         }
     }
 
@@ -46,7 +47,7 @@ class Parser {
         val head = parseAST()
         var x = peekToken()
         val l = ArrayList<AST>()
-        while (x !is RParen) {
+        while (x != RParen) {
             l.add(parseAST())
             x = peekToken()
         }
@@ -57,10 +58,10 @@ class Parser {
     private fun parseVect() : Vect {
         var x = peekToken()
         val l = ArrayList<AST>()
-        while (x !is RBracket) {
+        while (x != RBracket) {
             val name = parseAST()
             x = peekToken()
-            if (x is As) {
+            if (x == As) {
                 getToken() // => As
                 l.add(Bind(name, parseAST()))
                 x = peekToken()
@@ -90,7 +91,7 @@ class Parser {
             pos++
             RBracket
         }
-        '\u0000' -> End
+        '\uFFFF' -> End
         in AZaz -> eatTIdentifier()
         in Space -> {
             pos++
@@ -134,8 +135,8 @@ class Parser {
 
     companion object {
         const val AZaz = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
-        val AZaz09 = AZaz + "1234567890-"
-        val Space = " \n\t\r"
-        val Symbols = "!#$%&@`;+*:,<.>/?_=^~\\¥|-"
+        const val AZaz09 = AZaz + "1234567890-"
+        const val Space = " \n\t\r"
+        const val Symbols = "!#$%&@`;+*:,<.>/?_=^~\\¥|-"
     }
 }
