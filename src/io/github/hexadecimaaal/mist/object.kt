@@ -1,16 +1,16 @@
 package io.github.hexadecimaaal.mist
 
-sealed class MistType(type : MistType) : MistObject(type)
+sealed class MistType(type: MistType) : MistObject(type)
 
-data class Type(val order : Int) : MistType(Type(order + 1))
+class Type(val order: Int) : MistType(Type(order + 1))
 
 object Prop : MistType(Type(0))
 
 object Set : MistType(Type(0))
 
-data class Induction(val name : String, val constructors : List<MistObject>) : MistType(Set)
+class Induction(val name: String, val constructors: List<MistObject>) : MistType(Set)
 
-data class Forall(val bind : MistType, val body : MistType) : MistType(when (body) {
+class Forall(val bind: MistType, val body: MistType) : MistType(when (body) {
     is Type -> Type(body.order + 1)
     Prop -> Prop
     Set -> when (bind) {
@@ -21,24 +21,24 @@ data class Forall(val bind : MistType, val body : MistType) : MistType(when (bod
     is Induction -> Set
 })
 
-sealed class MistObject(val type : MistType)
+sealed class MistObject(val type: MistType)
 
-class Param(type : MistType) : MistObject(type)
+class Param(type: MistType) : MistObject(type)
 
-sealed class Abstraction(binder : Param, body : MistObject, val bodyBody: MistObject) :
+sealed class Abstraction(val binder: Param, val body: MistObject) :
         MistObject(Forall(binder.type, body.type))
 
-data class Definition(val binder : Param, val body : MistObject) :
-        Abstraction(binder, body, body)
+class Definition(binder: Param, body: MistObject) :
+        Abstraction(binder, body)
 
-data class Fixpoint(val binder : Param, val body : MistObject) :
-        Abstraction(binder, body, body)
+class Fixpoint(binder: Param, body: MistObject) :
+        Abstraction(binder, body)
 
-sealed class Call(function: Abstraction) :
-        MistObject(function.bodyBody.type)
+sealed class Call(val function: Abstraction) :
+        MistObject(function.body.type)
 
-data class CallDef(val function : Definition, val param : MistObject) :
+class CallDef(function: Definition, val param: MistObject) :
         Call(function)
 
-data class CallFix(val function : Fixpoint, val param : MistObject) :
+class CallFix(function: Fixpoint, val param: MistObject) :
         Call(function)
